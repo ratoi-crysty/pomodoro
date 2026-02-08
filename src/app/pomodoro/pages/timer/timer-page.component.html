@@ -1,0 +1,21 @@
+<div class="page">
+  <app-timer-display
+    [formattedTime]="pomodoro.formattedTime()"
+    [sessionLabel]="pomodoro.sessionLabel()"
+    [sessionType]="pomodoro.state().sessionType"
+    [progressPercent]="pomodoro.progressPercent()"
+  />
+
+  <app-session-progress
+    [currentSession]="pomodoro.state().currentSession"
+    [totalSessions]="pomodoro.state().totalSessions"
+    [sessionType]="pomodoro.state().sessionType"
+  />
+
+  <app-timer-controls
+    [status]="pomodoro.state().status"
+    (start)="pomodoro.start()"
+    (pause)="pomodoro.pause()"
+    (reset)="pomodoro.reset()"
+  />
+</div>

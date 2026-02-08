@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&display=swap');
+
+:host {
+  display: block;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.btn-primary {
+  padding: 12px 28px;
+  background: rgba(59, 130, 246, 0.12);
+  color: #7db4fc;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+
+  &:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.35);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+.btn-ghost {
+  padding: 10px 20px;
+  background: rgba(224, 230, 237, 0.04);
+  color: rgba(224, 230, 237, 0.5);
+  border: 1px solid rgba(224, 230, 237, 0.08);
+
+  &:hover {
+    background: rgba(224, 230, 237, 0.08);
+    color: rgba(224, 230, 237, 0.7);
+    border-color: rgba(224, 230, 237, 0.15);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}

@@ -1,0 +1,7 @@
+<div class="session-dots" [style.--accent]="accentColor()">
+  @for (dot of dots(); track dot.index) {
+    <div class="dot" [class]="dot.cssClass">
+      <span class="dot-inner"></span>
+    </div>
+  }
+</div>

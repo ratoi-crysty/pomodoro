@@ -92,6 +92,7 @@ await invoke<string>("command_name", { param: value });
 - Angular: Use Signal Forms, not Reactive Forms or HTML forms
 - Naming convention: `.<file-type>` suffix (e.g., `timer.component.ts`, `pomodoro.service.ts`)
 - Always use the frontend-design skill for creating/updating frontend UI
+- Use seperated file for HTML and SCSS
 
 ## TypeScript Standards
 
