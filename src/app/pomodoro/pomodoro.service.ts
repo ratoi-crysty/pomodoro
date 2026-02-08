@@ -1,11 +1,5 @@
 import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
-import {
-  DEFAULT_SESSION_CONFIG,
-  SessionConfig,
-  SessionType,
-  TimerState,
-  TimerStatus,
-} from './pomodoro.model';
+import { DEFAULT_SESSION_CONFIG, SessionConfig, SessionType, TimerState, TimerStatus } from './pomodoro.model';
 
 @Injectable({ providedIn: 'root' })
 export class PomodoroService {
@@ -53,14 +47,20 @@ export class PomodoroService {
 
   start(): void {
     if (this.state().status === TimerStatus.Running) return;
-    this.state.update((s: TimerState) => ({ ...s, status: TimerStatus.Running }));
+    this.state.update((s: TimerState) => ({
+      ...s,
+      status: TimerStatus.Running,
+    }));
     this.intervalId = setInterval(() => this.tick(), 1000);
   }
 
   pause(): void {
     if (this.state().status !== TimerStatus.Running) return;
     this.clearInterval();
-    this.state.update((s: TimerState) => ({ ...s, status: TimerStatus.Paused }));
+    this.state.update((s: TimerState) => ({
+      ...s,
+      status: TimerStatus.Paused,
+    }));
   }
 
   reset(): void {

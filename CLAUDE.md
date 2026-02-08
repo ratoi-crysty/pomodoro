@@ -74,14 +74,16 @@ readonly timerComplete = output<void>();
 ### Desktop (Tauri / Rust)
 
 The Rust backend handles native functionality:
+
 - System tray icon and menu
 - Desktop notifications on timer expiry
 - Window management (minimize to tray, restore)
 
 Communication between Angular and Rust uses Tauri's `invoke` API:
+
 ```typescript
-import { invoke } from "@tauri-apps/api/core";
-await invoke<string>("command_name", { param: value });
+import { invoke } from '@tauri-apps/api/core';
+await invoke<string>('command_name', { param: value });
 ```
 
 ## Code Style
@@ -99,9 +101,10 @@ await invoke<string>("command_name", { param: value });
 ### Strict Mode Enforcement
 
 1. **Never use `any`** - Use `unknown` when the type is truly unknown:
+
    ```typescript
    // Bad
-   function parseData(data: any): void { }
+   function parseData(data: any): void {}
 
    // Good
    function parseData(data: unknown): void {
@@ -112,6 +115,7 @@ await invoke<string>("command_name", { param: value });
    ```
 
 2. **Explicit Function/Method Typing** - All parameters and return types must be declared:
+
    ```typescript
    // Bad
    function formatTime(seconds) {
@@ -125,6 +129,7 @@ await invoke<string>("command_name", { param: value });
    ```
 
 3. **Explicit Variable Declarations** - Variables receiving values from functions/props must have explicit types:
+
    ```typescript
    // Bad
    const time = formatTime(1500);
@@ -134,6 +139,7 @@ await invoke<string>("command_name", { param: value });
    ```
 
 4. **Prefer Named Types** - Use explicit typings instead of inline object types:
+
    ```typescript
    // Bad
    function getTimerState(): { running: boolean; remaining: number } { ... }
@@ -149,6 +155,7 @@ await invoke<string>("command_name", { param: value });
 ## Angular Component Architecture
 
 ### Component Size and Responsibility
+
 - Keep components small and focused on a single responsibility
 - Split large components into smaller, reusable pieces
 - Aim for components under 200 lines of code
@@ -156,17 +163,20 @@ await invoke<string>("command_name", { param: value });
 ### Smart-Dumb Component Pattern
 
 **Dumb Components (Presentational):**
+
 - Handle UI rendering and UI-specific logic only
 - Manage internal UI state via signals (e.g., button hover state)
 - Handle UI events (click, change)
 - **Not allowed**: Direct injection of data services, business logic, data fetching
 
 **Smart Components (Container):**
+
 - Inject services and manage data fetching
 - Coordinate between multiple dumb components
 - Handle business logic and state management
 
 ### Minimize Custom CSS
+
 - Use component-scoped styles via `:host` and encapsulated SCSS
 - Only create custom SCSS for:
   - Custom animations
@@ -174,5 +184,6 @@ await invoke<string>("command_name", { param: value });
   - Specific design requirements
 
 ### Design
+
 - The design should mainly be focused on dark theme
 - The theme should be a blueish tone
