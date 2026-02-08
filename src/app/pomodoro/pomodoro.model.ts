@@ -14,8 +14,9 @@ export interface TimerState {
   sessionType: SessionType;
   currentSession: number;
   totalSessions: number;
-  remainingSeconds: number;
-  totalSeconds: number;
+  endTime: number | null;
+  remainingMs: number;
+  totalMs: number;
   status: TimerStatus;
 }
 

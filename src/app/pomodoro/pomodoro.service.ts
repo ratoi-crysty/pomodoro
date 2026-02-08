@@ -1,5 +1,19 @@
-import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
-import { DEFAULT_SESSION_CONFIG, SessionConfig, SessionType, TimerState, TimerStatus } from './pomodoro.model';
+import {
+  computed,
+  DestroyRef,
+  inject,
+  Injectable,
+  signal,
+} from '@angular/core';
+import {
+  DEFAULT_SESSION_CONFIG,
+  SessionConfig,
+  SessionType,
+  TimerState,
+  TimerStatus,
+} from './pomodoro.model';
+
+const TICK_INTERVAL_MS: number = 100;
 
 @Injectable({ providedIn: 'root' })
 export class PomodoroService {
@@ -11,26 +25,29 @@ export class PomodoroService {
     sessionType: SessionType.Work,
     currentSession: 1,
     totalSessions: this.config.totalWorkSessions,
-    remainingSeconds: this.config.workDurationSeconds,
-    totalSeconds: this.config.workDurationSeconds,
+    endTime: null,
+    remainingMs: this.config.workDurationSeconds * 1000,
+    totalMs: this.config.workDurationSeconds * 1000,
     status: TimerStatus.Idle,
   });
 
-  readonly formattedTime = computed<string>(() => {
-    const remaining: number = this.state().remainingSeconds;
-    const minutes: number = Math.floor(remaining / 60);
-    const seconds: number = remaining % 60;
+  readonly formattedTime = computed<string>((): string => {
+    const remaining: number = this.state().remainingMs;
+    const totalSeconds: number = Math.ceil(remaining / 1000);
+    const minutes: number = Math.floor(totalSeconds / 60);
+    const seconds: number = totalSeconds % 60;
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   });
 
   readonly progressPercent = computed<number>(() => {
-    const { remainingSeconds, totalSeconds }: TimerState = this.state();
-    if (totalSeconds === 0) return 0;
-    return ((totalSeconds - remainingSeconds) / totalSeconds) * 100;
+    const { remainingMs, totalMs }: TimerState = this.state();
+    if (totalMs === 0) return 0;
+    return ((totalMs - remainingMs) / totalMs) * 100;
   });
 
   readonly sessionLabel = computed<string>(() => {
-    const { sessionType, currentSession, totalSessions }: TimerState = this.state();
+    const { sessionType, currentSession, totalSessions }: TimerState =
+      this.state();
     switch (sessionType) {
       case SessionType.Work:
         return `Focus ${currentSession}/${totalSessions}`;
@@ -47,44 +64,58 @@ export class PomodoroService {
 
   start(): void {
     if (this.state().status === TimerStatus.Running) return;
+    const now: number = Date.now();
+    const remaining: number = this.state().remainingMs;
     this.state.update((s: TimerState) => ({
       ...s,
+      endTime: now + remaining,
       status: TimerStatus.Running,
     }));
-    this.intervalId = setInterval(() => this.tick(), 1000);
+    this.intervalId = setInterval(() => this.tick(), TICK_INTERVAL_MS);
   }
 
   pause(): void {
     if (this.state().status !== TimerStatus.Running) return;
     this.clearInterval();
+    const remaining: number = Math.max(
+      0,
+      this.state().endTime! - Date.now(),
+    );
     this.state.update((s: TimerState) => ({
       ...s,
+      endTime: null,
+      remainingMs: remaining,
       status: TimerStatus.Paused,
     }));
   }
 
   reset(): void {
     this.clearInterval();
+    const totalMs: number = this.config.workDurationSeconds * 1000;
     this.state.set({
       sessionType: SessionType.Work,
       currentSession: 1,
       totalSessions: this.config.totalWorkSessions,
-      remainingSeconds: this.config.workDurationSeconds,
-      totalSeconds: this.config.workDurationSeconds,
+      endTime: null,
+      remainingMs: totalMs,
+      totalMs,
       status: TimerStatus.Idle,
     });
   }
 
   private tick(): void {
     const current: TimerState = this.state();
-    if (current.remainingSeconds <= 1) {
+    const remaining: number = Math.max(0, current.endTime! - Date.now());
+
+    if (remaining <= 0) {
       this.clearInterval();
       this.transitionToNextSession(current);
       return;
     }
+
     this.state.update((s: TimerState) => ({
       ...s,
-      remainingSeconds: s.remainingSeconds - 1,
+      remainingMs: remaining,
     }));
   }
 
@@ -107,14 +138,15 @@ export class PomodoroService {
       nextType = SessionType.Work;
     }
 
-    const totalSeconds: number = this.getDurationForSession(nextType);
+    const totalMs: number = this.getDurationForSession(nextType) * 1000;
 
     this.state.set({
       sessionType: nextType,
       currentSession: nextSession,
       totalSessions: current.totalSessions,
-      remainingSeconds: totalSeconds,
-      totalSeconds,
+      endTime: null,
+      remainingMs: totalMs,
+      totalMs,
       status: TimerStatus.Idle,
     });
   }
